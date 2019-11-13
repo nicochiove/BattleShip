@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+    <link rel="stylesheet" type="text/css" href="styles/games.css">
+    <link href="https://fonts.googleapis.com/css?family=Calligraffitti&display=swap" rel="stylesheet">
+    <title>Salvo!</title>
+</head>
+<body onload="getFetchs()">
+
+
+	<button id="logButton" type="button" class="btn btn-primary" data-toggle="modal" data-target="#login_modal">
+	  Login
+	</button>
+
+	<div class="modal fade" id="login_modal" tabindex="-1" role="dialog" aria-labelledby="modal_login" aria-hidden="true">
+	  <div class="modal-dialog" role="document">
+	    <div class="modal-content">
+	      <div class="modal-header">
+	        <h5 class="modal-title" id="login_modal_label">Login</h5>
+	        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+	          <span aria-hidden="true">&times;</span>
+	        </button>
+	      </div>
+	      <div class="modal-body">
+	      	<div id="logs">
+		        <form id="login" onsubmit="return false">
+		            <label class="text-center">User:<input class="ml-3" type="text" name="username" placeholder="your@mail.com" required></label> 
+		            <label class="text-center">Password:<input class="ml-3" type="password" name="password" placeholder="********" required></label> 
+		            <input id="logInBot" class="btn btn-primary" type="submit" name="log_in" value="LOGIN" onclick="login()" >
+		        </form>
+		        <form onsubmit="return false">
+		        	<input id="logOutBot" class="btn btn-primary" type="submit" name="log_out" value="LOGOUT" onclick="logout()">
+		        </form>
+
+		        <div id="registerDiv">
+					<hr>
+
+			        <h3 class="text-center">Not a User yet?</h3>
+			        <button id="registerBot" type="button" class="btn btn-primary" data-toggle="modal" data-target="#register_modal" 
+			        		onclick="openRegister()">
+		  				Register
+					</button>
+				</div>
+
+		    </div>
+	      </div>
+	      <div class="modal-footer">
+	        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+	      </div>
+	    </div>
+	  </div>
+	</div>
+
+    <div id="content" class="row">
+		<div id="games" class="col-sm-6">
+	    	<h1>Games</h1>
+	    	<button  id="createButton" type="button" class="btn btn-primary" data-toggle="tooltip" data-placement="right" 
+	    				title="You must be Logged" onclick="createGame()">CREATE A GAME!</button>
+	    	<ol id="listaGames"></ol>
+		</div>
+	    
+	    <div id="leaderboards" class="col-sm-6">
+		    <h1>Leaderboards</h1>
+		    <table id="leaders_tabla" class="table">
+		        <thead>
+		            <tr>
+		                <th>Player</th>
+		                <th>Score</th>
+		                <th>Win</th>
+		                <th>Tie</th>
+		                <th>Loss</th>
+		            </tr>
+		        </thead>
+		        <tbody id="leaders">
+
+		        </tbody>
+		    </table>
+	    </div>
+	</div>
+
+	<div class="modal fade" id="register_modal" tabindex="-1" role="dialog" aria-labelledby="modal_reg" aria-hidden="true">
+	  <div class="modal-dialog" role="document">
+	    <div class="modal-content">
+	      <div class="modal-header">
+	        <h5 class="modal-title" id="register_modal_label">Register</h5>
+	        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+	          <span aria-hidden="true">&times;</span>
+	        </button>
+	      </div>
+	      <div class="modal-body">
+	      	<div id="logs">
+		        <form id="regForm" onsubmit="return false" action="">
+		        	<label>User:<input type="text" name="regUsername" placeholder="your@mail.com" required></label>
+		        	<label>Password:<input type="password" name="regPassword" placeholder="******" required></label>
+		        	<label>Confirm Password:<input type="password" name="regConPassword" placeholder="******" required></label>
+		        	<input type="submit" class="btn btn-primary" name="registerButton" value="REGISTER" onclick="registerUser()">
+		        </form>
+		    </div>
+	      </div>
+	      <div class="modal-footer">
+	        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+	      </div>
+	    </div>
+	  </div>
+	</div>
+
+	<div class="modal fade" id="error_modal" tabindex="-1" role="dialog" aria-labelledby="modal_error" aria-hidden="true">
+	  <div class="modal-dialog" role="document">
+	    <div class="modal-content">
+	        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+	          <span aria-hidden="true">&times;</span>
+	        </button>
+	      </div>
+	      <div id="error_modal_body" class="modal-body">
+	      	
+	      </div>
+	    </div>
+	  </div>
+
+	<div id="carga">
+		
+		  <img src="assets/timon.png" id="timon">
+		
+	</div>
+
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
+	<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+	<script type="text/javascript" src="scripts/games.js"></script>
+</body>
+</html>

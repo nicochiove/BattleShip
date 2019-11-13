@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+    <link href="https://fonts.googleapis.com/css?family=Calligraffitti&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles/style.css">
+    <link rel="stylesheet" href="styles/normalize.css">
+    <title>Ship Locations</title>
+</head>
+<body onload="getShipsPositions()">
+    <h1>AHOY BUCANEER!</h1>
+    <a id="homebutton1" href="/web/games.html"><button type="button" class="btn btn-primary">HOME</button></a>
+    <div class="flex-container">
+
+    	<div id="grid_salvo" style="display: none;">
+            <!--The grid will appear here -->
+        </div>
+
+        <div class="flex-container2">
+	        <div id="grid">
+	            <!--The grid will appear here -->
+	        </div>
+
+	        <div id="dock">
+	            
+	            <div id="display">
+	                <p>Welcome...</p>
+	            </div>
+	            
+	            <div>
+	            	<button id="place_ships" type="button" class="btn btn-danger" onclick="postShips()" disabled>ANCHORS AWEIGH!</button>
+	            </div>
+	            
+	            <div>
+	            	<button id="shoot" type="button" class="btn btn-danger" onclick="sendSalvo()" disabled style="display: none;">ATTACK! ARRGH</button>
+	            </div>
+
+	            <!--The new ships will show up here, waiting for been placed in the grid -->
+
+	        </div>
+        </div>
+    </div>
+
+    <div id="final" style="display: none;">
+    	<h1>Game Over</h1>
+    	<div>
+    		<h1 id="finalMsg"></h1>
+    		<img id="plankimg" src="assets/plank.png" style="display: none;">
+    		<img id="lootimg" src="assets/loot.png" style="display: none;">
+    		<img id="tie" src="assets/rum.jpg" style="display: none;">
+    		<a href="/web/games.html"><button type="button" class="btn btn-primary">HOME</button></a>
+    	</div>
+    </div>
+
+	<script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
+	<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+    <script src="scripts/game.js"></script>
+    <script src="scripts/salvoes.js"></script>
+    <script src="scripts/ships.js"></script>
+    <script src="scripts/grid.js"></script>
+
+</body>
+</html>
