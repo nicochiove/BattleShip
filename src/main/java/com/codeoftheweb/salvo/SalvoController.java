@@ -523,7 +523,7 @@ public class SalvoController {
                         } else {
                             stateOfGame = "WaitingForOpponent";
                         }
-                        if (game.getScores().size() == 2) {
+                        if (game.getScores().size() == 1) {
                             stateOfGame = "GAMEOVER";
                         }
                     }else{
