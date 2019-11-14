@@ -61,6 +61,7 @@ function getFetchs(){
     getGames();
     getLeaders();
     $('#createButton').tooltip('disable');
+    anyNewGames()
 
 }
 
