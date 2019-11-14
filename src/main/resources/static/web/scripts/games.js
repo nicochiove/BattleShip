@@ -42,6 +42,7 @@ function getGames(){
             listarJuegos();
             btnsDisplay((isLoggued || (jsonGames.player !== "guest")))
             disposeLoader();
+            anyNewGames()
         })
 }
 
@@ -61,8 +62,6 @@ function getFetchs(){
     getGames();
     getLeaders();
     $('#createButton').tooltip('disable');
-    anyNewGames()
-
 }
 
 //REALIZA EL LOGIN CON EL CAMPO DE USER Y PASS
