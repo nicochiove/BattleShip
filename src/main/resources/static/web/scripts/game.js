@@ -257,7 +257,7 @@ var timerRefresh
 function esperaAlRival(){
     timerRefresh= setTimeout(function() { 
                                 refreshGameData()
-                                }, 2500);
+                                }, 4000);
 }
 
 function gameContinue(){
