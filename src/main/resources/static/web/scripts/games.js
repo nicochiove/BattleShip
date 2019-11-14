@@ -282,6 +282,26 @@ function disposeLoader(){
 function actionModal(modalname, action){
     $(modalname).modal(action)
 }
+
+
+var timerRefresh
+
+function esperaAlRival(){
+    timerRefresh= setTimeout(function() { 
+                                refreshGameList()
+                                }, 10000);
+}
+
+function refreshGameList(){
+    function getGames(){
+    fetch(urlAPI.games)
+        .then(function(response) {
+            return response.json()
+        }).then(function(json) {
+            jsonGames= json;
+            listarJuegos();
+        })
+}
 /*
 [{type: bergantin, gamePlayer: 5, locations: ["A1","A2","A3"]},{type: carabela, gamePlayer: 5, locations: ["B1","B2","B3"]},
 {type: galeon, gamePlayer: 5, locations: ["C1","C2","C3","C4","C5"]}, {type: fragata, gamePlayer: 5, locations: ["D1","D2","D3","D4"]},
