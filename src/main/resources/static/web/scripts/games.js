@@ -286,7 +286,7 @@ function actionModal(modalname, action){
 
 var timerRefresh
 
-function esperaAlRival(){
+function anyNewGames(){
     timerRefresh= setTimeout(function() { 
                                 refreshGameList()
                                 }, 10000);
