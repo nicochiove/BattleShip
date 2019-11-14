@@ -301,6 +301,7 @@ function refreshGameList(){
         }).then(function(json) {
             jsonGames= json;
             listarJuegos();
+            anyNewGames()
         })
     }
 }
