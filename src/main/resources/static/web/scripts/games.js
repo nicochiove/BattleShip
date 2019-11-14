@@ -301,6 +301,7 @@ function refreshGameList(){
             jsonGames= json;
             listarJuegos();
         })
+    }
 }
 /*
 [{type: bergantin, gamePlayer: 5, locations: ["A1","A2","A3"]},{type: carabela, gamePlayer: 5, locations: ["B1","B2","B3"]},
