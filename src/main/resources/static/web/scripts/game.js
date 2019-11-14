@@ -33,6 +33,7 @@ function refreshGameData(){
     })
     .then(function(json){
         jsonGamePlayer= json;
+        gameContinue()
     })
 }
 
@@ -255,8 +256,7 @@ var timerRefresh
 
 function esperaAlRival(){
     timerRefresh= setTimeout(function() { 
-                                refreshGameData();
-                                gameContinue()
+                                refreshGameData()
                                 }, 2500);
 }
 
