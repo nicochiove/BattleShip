@@ -12,6 +12,10 @@ h1{
     font-family: 'Calligraffitti', cursive;
 }
 
+#cartel h1{
+    font-family: 'ZCOOL KuaiLe', cursive;
+}
+
 .hitSpot{
     background-image: url('../assets/icons/fire.png');
     background-size: contain;
@@ -36,8 +40,11 @@ h1{
 
 #cartel{
     background-image: url('../assets/wood-cartel.png');
-    width: 20%;
-    height: 20%;
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-position: center;
+    width: 10em;
+    height: 6em;
     display: block;
 }
 
