@@ -20,8 +20,6 @@ function afterShot(){
         setSalvoes(jsonGamePlayer);
         document.getElementById('place_ships').style.display= 'none'
         esperaAlRival()
-        //showAvailableSalvo(json)
-        //showShootButton()
     })
 }
 
@@ -29,7 +27,11 @@ function afterShot(){
 function refreshGameData(){
     fetch("/api/game_view/"+getParamGP())
     .then(function(response){
-        return response.json();
+        if(response.ok){
+            return response.json();
+        }else{
+            return Promise.reject(promise)
+        }
     })
     .then(function(json){
         jsonGamePlayer= json;
@@ -56,13 +58,11 @@ function getShipsPositions(){
 //PONE LOS BARCOS EN SU LUGAR
 function setShips(obj){
     if(obj.ships.length !== 0){
-        showSalvoGrid()        
+        //showSalvoGrid()        
         document.getElementById('place_ships').style.display= 'none'
         for(ship in obj.ships){
             createShips(obj.ships[ship].ship.toLowerCase(), getShipLength(obj.ships[ship].ship), getOrientation(obj.ships[ship].locations), document.getElementById(`ships${obj.ships[ship].locations[0]}`), true);
         }
-        //showAvailableSalvo(obj)
-        //showShootButton()
     }else{
         createShips('galeon', 5, 'horizontal', document.getElementById('dock'),false)
         createShips('fragata', 4, 'horizontal', document.getElementById('dock'),false)
@@ -157,9 +157,7 @@ function postShips(){
             redrawShips()
             getShipsPositions()
             document.getElementById('place_ships').style.display= 'none'
-            //refreshGameData()
-            esperaAlRival()
-            //gameContinue()
+            //esperaAlRival()   
         }).catch(function(error){
             console.log(error.message)
         }).then(function(json){
@@ -172,20 +170,14 @@ function postShips(){
 //QUITA LOS BARCOS DE LA GRILLA PARA VOLVER A DIBUJARLOS ESTATICOS
 function redrawShips(){
     document.getElementById('bergantin').remove()
-    //createShips("bergantin",2,getOrientation(getShipsLocations('bergantin')),document.querySelector('.bergantin-busy-cell'),true)
     document.getElementById('goleta').remove()
-    //createShips("goleta",3,getOrientation(getShipsLocations('goleta')),document.querySelector('.goleta-busy-cell'),true)
     document.getElementById('carabela').remove()
-    //createShips("carabela",3,getOrientation(getShipsLocations('carabela')),document.querySelector('.carabela-busy-cell'),true)
     document.getElementById('fragata').remove()
-    //createShips("fragata",4,getOrientation(getShipsLocations('fragata')),document.querySelector('.fragata-busy-cell'),true)
     document.getElementById('galeon').remove()
-    //createShips("galeon",5,getOrientation(getShipsLocations('galeon')),document.querySelector('.galeon-busy-cell'),true)
 }
 
 //MUESTRA LA GRILLA DE SALVO
 function showSalvoGrid(){
-    if(jsonGamePlayer["state"] == "EnterSalvo")
     document.getElementById('grid_salvo').style.display= 'inline-block'
 }
 
@@ -275,6 +267,7 @@ function gameContinue(){
             endGame()
             break;
         case "EnterSalvo":
+            timerRefresh= 0;
             showSalvoGrid()
             showAvailableSalvo(jsonGamePlayer)
             showShootButton()

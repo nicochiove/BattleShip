@@ -7,6 +7,11 @@ body{
     padding-bottom: 10vh; 
 }
 
+h1{
+    text-align: center;
+    font-family: 'Calligraffitti', cursive;
+}
+
 .hitSpot{
     background-image: url('../assets/icons/fire.png');
     background-size: contain;
@@ -27,6 +32,13 @@ body{
     justify-content: center;
     align-items: center;
     height: 100%;
+}
+
+#cartel{
+    background-image: url('../assets/wood-cartel.png');
+    width: 20%;
+    height: 20%;
+    display: block;
 }
 
 #dock{

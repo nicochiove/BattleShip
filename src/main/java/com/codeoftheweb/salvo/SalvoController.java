@@ -284,7 +284,7 @@ public class SalvoController {
         dto.put("hits", didIHitSomething(gamePlayer));
         dto.put("sunks", didISinkSomething(gamePlayer));
         dto.put("state", stateOfGame(gamePlayer));
-        if(gamePlayer.getGame().getScores().size() == 2){
+        if(gamePlayer.getGame().getScores().size() != 0){
             dto.put("score",gamePlayer.getGame().getScores().stream().filter(score -> score.getPlayer().getId() == gamePlayer.getPlayer().getId()).findFirst().get().getScore());
         }
 
@@ -523,7 +523,7 @@ public class SalvoController {
                         } else {
                             stateOfGame = "WaitingForOpponent";
                         }
-                        if (game.getScores().size() == 1) {
+                        if (game.getScores().size() != 0) {
                             stateOfGame = "GAMEOVER";
                         }
                     }else{
