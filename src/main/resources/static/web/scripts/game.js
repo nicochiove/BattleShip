@@ -157,9 +157,9 @@ function postShips(){
             redrawShips()
             getShipsPositions()
             document.getElementById('place_ships').style.display= 'none'
-            refreshGameData()
-            //esperaAlRival()
-            gameContinue()
+            //refreshGameData()
+            esperaAlRival()
+            //gameContinue()
         }).catch(function(error){
             console.log(error.message)
         }).then(function(json){
@@ -248,10 +248,12 @@ function howManyShipsAfloatDoIHave(json){
     return document.querySelectorAll('.grid-item').length - sunkShips
 }
 
+//ESCRIBE EL MENSAJE DE ESPERE...
 function waiting(){
     document.querySelector('#display p').innerText= 'Wait a Moment sea dog...'
 }
 
+//REFRESCA LOS DATOS DEL JUEGO
 var timerRefresh
 
 function esperaAlRival(){
@@ -260,6 +262,7 @@ function esperaAlRival(){
                                 }, 4000);
 }
 
+//MANEJA EL FLUJO DEL JUEGO
 function gameContinue(){
     let state= jsonGamePlayer["state"]
 
@@ -287,8 +290,9 @@ function gameContinue(){
     }
 }
 
+//FINAL DEL JUEGO
 function endGame(){
-    console.log("No, no tiene nada que ver con los avengers, es que temrina el juego")
+    console.log("No, no tiene nada que ver con los avengers, es que termina el juego")
     document.getElementById('final').style.display= 'block'
     document.getElementById('homebutton1').style.display= 'none'
     switch(jsonGamePlayer.score){
