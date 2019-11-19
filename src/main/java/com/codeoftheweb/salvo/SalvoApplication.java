@@ -45,7 +45,7 @@ public class SalvoApplication {
                                       GamePlayerRepository gamePlayerRepository, SalvoRepository salvoRepository,
                                       ScoreRepository scoreRepository) {
 		return (args) -> {
-			// save a couple of customers
+			Player barbanegra= playerRepository.save(new Player("Barbanegra"));
 			Player bauer= playerRepository.save(new Player("Bauer"));
 			Player obrian= playerRepository.save(new Player("O'Brian"));
 			Player bauer2= playerRepository.save(new Player("Bauer2"));

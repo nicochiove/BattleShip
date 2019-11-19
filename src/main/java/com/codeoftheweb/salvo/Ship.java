@@ -22,11 +22,11 @@ public class Ship {
     @Column(name="location")
     private List<String> locations= new ArrayList<>();
 
-    static public int goletaLentgh= 3;
-    static public int galeonLentgh= 5;
-    static public int fragataLentgh= 4;
-    static public int carabelaLentgh= 3;
-    static public int bergantinLentgh= 2;
+    static public int goletaLength = 3;
+    static public int galeonLength = 5;
+    static public int fragataLength = 4;
+    static public int carabelaLength = 3;
+    static public int bergantinLength = 2;
 
     public Ship(){}
 

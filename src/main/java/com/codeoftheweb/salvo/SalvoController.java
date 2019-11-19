@@ -31,6 +31,7 @@ public class SalvoController {
     @Autowired
     private ScoreRepository scoreRepository;
 
+
     public boolean isGuest(Authentication authentication) {
         return authentication == null;
     }
@@ -61,6 +62,34 @@ public class SalvoController {
             try {
                 Game newGame = gameRepository.save(new Game(LocalDateTime.now()));
                 GamePlayer newGP = gamePlayerRepository.save(new GamePlayer(newGame.getCreationDate(), newGame, user));
+
+                dto.put("GamePlayer_Id", newGP.getId());
+                status = HttpStatus.CREATED;
+            } catch (Exception e) {
+                dto.put("Error", e.toString());
+                status = HttpStatus.INTERNAL_SERVER_ERROR;
+            }
+        } else {
+            dto.put("Error", "You must be logged to create a game");
+            status = HttpStatus.UNAUTHORIZED;
+        }
+        return new ResponseEntity<>(dto, status);
+    }
+
+    @PostMapping("/gamevsbot")
+    public ResponseEntity<Map<String, Object>> createGameVsBot(Authentication authentication) {
+        Map<String, Object> dto = new LinkedHashMap<>();
+        HttpStatus status;
+
+        if (getUser(authentication) != null) {
+            Player user = playerRepository.findByUserName(getUser(authentication).getUserName());
+            try {
+                Game newGame = gameRepository.save(new Game(LocalDateTime.now()));
+                GamePlayer newGP = gamePlayerRepository.save(new GamePlayer(newGame.getCreationDate(), newGame, user));
+
+                GamePlayer botGP= gamePlayerRepository.save(new GamePlayer(LocalDateTime.now(), newGame, playerRepository.findById((long) 1).get()));
+
+                botPlaceShips(botGP);
 
                 dto.put("GamePlayer_Id", newGP.getId());
                 status = HttpStatus.CREATED;
@@ -355,19 +384,19 @@ public class SalvoController {
 
         switch (ship.getType()) {
             case GALEON:
-                correctDistance = Ship.galeonLentgh - 1;
+                correctDistance = Ship.galeonLength - 1;
                 break;
             case FRAGATA:
-                correctDistance = Ship.fragataLentgh - 1;
+                correctDistance = Ship.fragataLength - 1;
                 break;
             case GOLETA:
-                correctDistance = Ship.goletaLentgh - 1;
+                correctDistance = Ship.goletaLength - 1;
                 break;
             case CARABELA:
-                correctDistance = Ship.carabelaLentgh - 1;
+                correctDistance = Ship.carabelaLength - 1;
                 break;
             case BERGANTIN:
-                correctDistance = Ship.bergantinLentgh - 1;
+                correctDistance = Ship.bergantinLength - 1;
                 break;
             default:
                 correctDistance = 155;
@@ -554,6 +583,134 @@ public class SalvoController {
         GamePlayer rivalGP= gp.getGame().getGamePlayers().stream().filter(gamePlayer -> gamePlayer.getPlayer().getId() != gp.getPlayer().getId()).findFirst().orElse(null);
 
         return gp.getId() < rivalGP.getId();
+    }
+
+    private boolean botPlaceShips(GamePlayer botgp){
+
+        Random orientationPicker= new Random();
+        String orientation;
+        List<ShipTypes> type= Arrays.asList(ShipTypes.GALEON, ShipTypes.FRAGATA, ShipTypes.CARABELA, ShipTypes.BERGANTIN, ShipTypes.GOLETA);
+        List<String> occupiedPos= new ArrayList<>();
+
+        for(int i=0;i<5;i++) {
+            if (orientationPicker.nextBoolean()) {
+                orientation = "horizontal";
+            } else {
+                orientation = "vertical";
+            }
+
+            botgp.addShip(chooseBotShipLocations(orientation, type.get(i),occupiedPos));
+
+            botgp.getShips().forEach(ship -> occupiedPos.addAll(ship.getLocations()));
+        }
+
+        return false;
+    }
+
+
+    private Ship chooseBotShipLocations(String orientation, ShipTypes type,List<String> invalidPos){
+        int numberOfCells;
+        Ship newShip= new Ship();
+        List<Integer> xValues= Arrays.asList(1,2,3,4,5,6,7,8,9,10);
+        List<String> yValues= Arrays.asList("A","B","C","D","E","F","G","H","I","J");
+
+
+        switch(type){
+            case BERGANTIN:
+                numberOfCells= Ship.bergantinLength;
+                newShip.setType(type);
+                switch(orientation){
+                    case "horizontal":
+                        xValues.remove(10);
+                        newShip.setLocations(selectCells(numberOfCells,xValues,yValues,true, invalidPos));
+                        break;
+                    case "vertical":
+                        yValues.remove("J");
+                        newShip.setLocations(selectCells(numberOfCells,xValues,yValues,false, invalidPos));
+                        break;
+                }
+                break;
+            case CARABELA:
+                numberOfCells= Ship.carabelaLength;
+                newShip.setType(type);
+                switch(orientation){
+                    case "horizontal":
+                        xValues.removeIf(integer -> integer > 8);
+                        newShip.setLocations(selectCells(numberOfCells,xValues,yValues,true, invalidPos));
+                        break;
+                    case "vertical":
+                        yValues.removeAll(List.of("I","J"));
+                        newShip.setLocations(selectCells(numberOfCells,xValues,yValues,false, invalidPos));
+                        break;
+                }
+                break;
+            case GOLETA:
+                numberOfCells= Ship.goletaLength;
+                newShip.setType(type);
+                switch(orientation){
+                    case "horizontal":
+                        xValues.removeIf(integer -> integer > 8);
+                        newShip.setLocations(selectCells(numberOfCells,xValues,yValues,true, invalidPos));
+                        break;
+                    case "vertical":
+                        yValues.removeAll(List.of("I","J"));
+                        newShip.setLocations(selectCells(numberOfCells,xValues,yValues,false, invalidPos));
+                        break;
+                }
+                break;
+            case FRAGATA:
+                numberOfCells= Ship.fragataLength;
+                newShip.setType(type);
+                switch(orientation){
+                    case "horizontal":
+                        xValues.removeIf(integer -> integer > 7);
+                        newShip.setLocations(selectCells(numberOfCells,xValues,yValues,true, invalidPos));
+                        break;
+                    case "vertical":
+                        yValues.removeAll(List.of("H","I","J"));
+                        newShip.setLocations(selectCells(numberOfCells,xValues,yValues,false, invalidPos));
+                        break;
+                }
+                break;
+            case GALEON:
+                numberOfCells= Ship.galeonLength;
+                newShip.setType(type);
+                switch(orientation){
+                    case "horizontal":
+                        xValues.removeIf(integer -> integer > 6);
+                        newShip.setLocations(selectCells(numberOfCells,xValues,yValues,true, invalidPos));
+                        break;
+                    case "vertical":
+                        yValues.removeAll(List.of("G","H","I","J"));
+                        newShip.setLocations(selectCells(numberOfCells,xValues,yValues,false, invalidPos));
+                        break;
+                }
+        }
+
+        return newShip;
+    }
+
+    private List<String> selectCells(Integer num, List<Integer> xValues, List<String> yValues, Boolean isHorizontal, List<String> invalidPos){
+        List<String> rtn= new ArrayList<>();
+        Random picker= new Random();
+        String fstLetter=yValues.get(picker.nextInt(yValues.size()));
+        int fstNumber=xValues.get(picker.nextInt(xValues.size()));
+
+        rtn.add( fstLetter + fstNumber);
+
+
+        if(isHorizontal){
+            for(int i=0; i<num-1; i++){
+                rtn.add(fstLetter + fstNumber++);
+            }
+        }else{
+            char letter= fstLetter.charAt(0);
+            for(int i=0; i<num-1; i++){
+                rtn.add(String.valueOf(letter++) + fstNumber);
+            }
+        }
+
+        return rtn;
     }
 }
 

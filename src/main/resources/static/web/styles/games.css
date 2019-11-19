@@ -30,7 +30,7 @@ body{
 
 h1{
 	text-align: center;
-	font-family: 'Calligraffitti', cursive;
+	font-family: 'piratefont';
 }
 
 #carga img{
@@ -145,4 +145,9 @@ ul{
 }
 ::-webkit-scrollbar-corner {
   background: transparent;
+}
+
+@font-face{
+    font-family: piratefont;
+    src: url("../fonts/Pieces_of_Eight.ttf");
 }

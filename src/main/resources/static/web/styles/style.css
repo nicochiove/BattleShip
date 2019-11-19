@@ -9,11 +9,11 @@ body{
 
 h1{
     text-align: center;
-    font-family: 'Calligraffitti', cursive;
+    font-family: 'piratefont';
 }
 
 #cartel h1{
-    font-family: 'ZCOOL KuaiLe', cursive;
+    font-family: 'wolves';
 }
 
 .hitSpot{
@@ -196,7 +196,7 @@ h1{
 }
 
 #final h1{
-    font-family: 'Calligraffitti', cursive;
+    font-family: 'piratefont';
     font-size: 5em;
     text-align: center;
     margin-bottom: 1vh;
@@ -222,7 +222,7 @@ h1{
 }
 
 #display p{
-    font-family: 'Calligraffitti', cursive;
+    font-family: 'piratefont';
     font-size: 1.2em;
     display: inline-block;
     max-width: 100%;
@@ -308,6 +308,16 @@ h1{
 .hide{
     top: -1000px;
     left: -1000px;
+}
+
+@font-face{
+    font-family: piratefont;
+    src: url("../fonts/Pieces_of_Eight.ttf");
+}
+
+@font-face{
+    font-family: wolves;
+    src: url("../fonts/Wolves_and_Ravens.ttf");
 }
 
 @media only screen and (min-width: 576px){
