@@ -16,9 +16,12 @@
 		
 	</div>
 
-	<button id="logButton" type="button" class="btn btn-primary" data-toggle="modal" data-target="#login_modal">
+	<button id="logButton" type="button" data-toggle="modal" data-target="#login_modal">
 	  Login
 	</button>
+
+	<audio id="main_theme" src="sound/main_trimmed.mp3" autoplay loop></audio>
+	<button id="stop_music" onclick="stopMusic()"> SHHHH!</button>
 
 	<div class="modal fade" id="login_modal" tabindex="-1" role="dialog" aria-labelledby="modal_login" aria-hidden="true">
 	  <div class="modal-dialog" role="document">
@@ -68,8 +71,10 @@
     	
 		<div id="games" class="col-sm-6">
 	    	<h1>Games</h1>
-	    	<button  id="createButton" type="button" class="btn btn-primary" data-toggle="tooltip" data-placement="right" 
+	    	<button  id="createButton" type="button"  data-toggle="tooltip" data-placement="right" 
 	    				title="You must be Logged" onclick="createGame()">CREATE A GAME!</button>
+	    	<button id="vsbot" type="button"  data-toggle="tooltip" data-placement="right" 
+	    				title="You must be Logged" onclick="createGameVSBot()">CHALLENGE A FAMOUS AI</button>
 	    	<ol id="listaGames"></ol>
 		</div>
 	    

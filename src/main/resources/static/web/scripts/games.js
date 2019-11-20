@@ -3,7 +3,8 @@ const urlAPI= {
                     leaderboards: '/api/leaderboards',
                     login: '/api/login',
                     logout: '/api/logout',
-                    register: '/api/players'
+                    register: '/api/players',
+                    vsBot: '/api/gamevsbot'
 }
 
 let isLoggued= false;
@@ -301,6 +302,42 @@ function refreshGameList(){
             listarJuegos();
             anyNewGames()
         })
+}
+
+function createGameVSBot(){
+
+    if(jsonGames.player !== "guest"){
+
+        fetch(urlAPI.vsbot, {method: "POST"})
+            .then(function(response){
+                
+                return response.json();
+                
+            }).then(function(json){
+                if(json['GamePlayer_Id']){
+                    window.location.href = `/web/game.html?gp=${json['GamePlayer_Id']}`;
+                }else{
+                    errorMsg= json['error'];
+                    document.getElementById('error_modal_body').innerHTML= `<h4>${errorMsg}</h4>`
+                    $('#error_modal_body').modal('show')
+                }
+            }).catch(function(error){
+                console.log(error.message)
+            })
+
+    }else{
+
+        $('#vsbot').tooltip('enable');
+        $('#vsbot').tooltip('show');
+
+    }
+}
+
+
+function stopMusic(){
+
+    document.getElementById('main_theme').toggleAttribute('paused')
+
 }
 
 /*
