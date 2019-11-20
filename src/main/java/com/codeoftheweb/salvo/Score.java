@@ -98,6 +98,15 @@ public class Score {
 
         return dto;
     }
+
+    public Map<String, Object> gameScoreDTO(){
+        Map<String,Object> dto= new LinkedHashMap<>();
+
+        dto.put("player",this.player.getId());
+        dto.put("score",this.score);
+
+        return dto;
+    }
 }
 
 

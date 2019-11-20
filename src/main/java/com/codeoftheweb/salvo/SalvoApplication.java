@@ -51,10 +51,12 @@ public class SalvoApplication {
 			Player bauer2= playerRepository.save(new Player("Bauer2"));
 			Player palmer= playerRepository.save(new Player("Palmer"));
 			playerRepository.save(new Player("Dessler"));
+			barbanegra.setPassword(passwordEncoder().encode("rum"));
 			bauer.setPassword(passwordEncoder().encode("24"));
 			obrian.setPassword(passwordEncoder().encode("42"));
 			bauer2.setPassword(passwordEncoder().encode("kb"));
 			palmer.setPassword(passwordEncoder().encode("mole"));
+			playerRepository.save(barbanegra);
 			playerRepository.save(bauer);
             playerRepository.save(obrian);
             playerRepository.save(bauer2);

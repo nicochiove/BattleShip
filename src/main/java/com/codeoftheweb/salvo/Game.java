@@ -66,6 +66,9 @@ public class Game {
         dto.put("id", this.id);
         dto.put("creationDate", this.creationDate);
         dto.put("gamePlayers", this.gamePlayers.stream().map(GamePlayer::gamePlayerDTO));
+        if(this.getScores().size() == 2){
+            dto.put("scores", this.scores.stream().map(Score::gameScoreDTO));
+        }
 
         return dto;
     }

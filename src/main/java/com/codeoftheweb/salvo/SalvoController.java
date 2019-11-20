@@ -91,6 +91,8 @@ public class SalvoController {
 
                 botPlaceShips(botGP);
 
+                gamePlayerRepository.save(botGP);
+
                 dto.put("GamePlayer_Id", newGP.getId());
                 status = HttpStatus.CREATED;
             } catch (Exception e) {
@@ -589,7 +591,7 @@ public class SalvoController {
 
         Random orientationPicker= new Random();
         String orientation;
-        List<ShipTypes> type= Arrays.asList(ShipTypes.GALEON, ShipTypes.FRAGATA, ShipTypes.CARABELA, ShipTypes.BERGANTIN, ShipTypes.GOLETA);
+        List<ShipTypes> type= Arrays.asList(ShipTypes.GALEON, ShipTypes.FRAGATA, ShipTypes.CARABELA, ShipTypes.GOLETA, ShipTypes.BERGANTIN);
         List<String> occupiedPos= new ArrayList<>();
 
         for(int i=0;i<5;i++) {
@@ -611,9 +613,9 @@ public class SalvoController {
     private Ship chooseBotShipLocations(String orientation, ShipTypes type,List<String> invalidPos){
         int numberOfCells;
         Ship newShip= new Ship();
-        List<Integer> xValues= Arrays.asList(1,2,3,4,5,6,7,8,9,10);
-        List<String> yValues= Arrays.asList("A","B","C","D","E","F","G","H","I","J");
-
+        List<String> validCells= new Grid().getCells();
+        validCells.removeAll(invalidPos);
+        System.out.println("cualquier barco puede ocupar las celdas: " + validCells);
 
         switch(type){
             case BERGANTIN:
@@ -621,12 +623,14 @@ public class SalvoController {
                 newShip.setType(type);
                 switch(orientation){
                     case "horizontal":
-                        xValues.remove(10);
-                        newShip.setLocations(selectCells(numberOfCells,xValues,yValues,true, invalidPos));
+                        validCells.removeAll(Arrays.asList("A10","B10","C10","D10","E10","F10","G10","H10","I10","J10"));
+                        System.out.println("el barco: "+ type +" puede ocupar las celdas: " + validCells + " en forma "+ orientation);
+                        newShip.setLocations(selectCells(numberOfCells, validCells, true, invalidPos));
                         break;
                     case "vertical":
-                        yValues.remove("J");
-                        newShip.setLocations(selectCells(numberOfCells,xValues,yValues,false, invalidPos));
+                        validCells.removeAll(Arrays.asList("J1","J2","J3","J4","J5","J6","J7","J8","J9","J10"));
+                        System.out.println("el barco: "+ type +" puede ocupar las celdas: " + validCells + " en forma "+ orientation);
+                        newShip.setLocations(selectCells(numberOfCells, validCells,false, invalidPos));
                         break;
                 }
                 break;
@@ -635,12 +639,14 @@ public class SalvoController {
                 newShip.setType(type);
                 switch(orientation){
                     case "horizontal":
-                        xValues.removeIf(integer -> integer > 8);
-                        newShip.setLocations(selectCells(numberOfCells,xValues,yValues,true, invalidPos));
+                        validCells.removeAll(createPosToErase(Grid.getLetters(), Arrays.asList("9","10")));
+                        System.out.println("el barco: "+ type +" puede ocupar las celdas: " + validCells + " en forma "+ orientation);
+                        newShip.setLocations(selectCells(numberOfCells, validCells,true, invalidPos));
                         break;
                     case "vertical":
-                        yValues.removeAll(List.of("I","J"));
-                        newShip.setLocations(selectCells(numberOfCells,xValues,yValues,false, invalidPos));
+                        validCells.removeAll(createPosToErase(Arrays.asList("I","J"), Grid.getNumbers()));
+                        System.out.println("el barco: "+ type +" puede ocupar las celdas: " + validCells + " en forma "+ orientation);
+                        newShip.setLocations(selectCells(numberOfCells, validCells,false, invalidPos));
                         break;
                 }
                 break;
@@ -649,12 +655,14 @@ public class SalvoController {
                 newShip.setType(type);
                 switch(orientation){
                     case "horizontal":
-                        xValues.removeIf(integer -> integer > 8);
-                        newShip.setLocations(selectCells(numberOfCells,xValues,yValues,true, invalidPos));
+                        validCells.removeAll(createPosToErase(Grid.getLetters(), Arrays.asList("9","10")));
+                        System.out.println("el barco: "+ type +" puede ocupar las celdas: " + validCells + " en forma "+ orientation);
+                        newShip.setLocations(selectCells(numberOfCells, validCells,true, invalidPos));
                         break;
                     case "vertical":
-                        yValues.removeAll(List.of("I","J"));
-                        newShip.setLocations(selectCells(numberOfCells,xValues,yValues,false, invalidPos));
+                        validCells.removeAll(createPosToErase(Arrays.asList("I","J"), Grid.getNumbers()));
+                        System.out.println("el barco: "+ type +" puede ocupar las celdas: " + validCells + " en forma "+ orientation);
+                        newShip.setLocations(selectCells(numberOfCells, validCells,false, invalidPos));
                         break;
                 }
                 break;
@@ -663,12 +671,14 @@ public class SalvoController {
                 newShip.setType(type);
                 switch(orientation){
                     case "horizontal":
-                        xValues.removeIf(integer -> integer > 7);
-                        newShip.setLocations(selectCells(numberOfCells,xValues,yValues,true, invalidPos));
+                        validCells.removeAll(createPosToErase(Grid.getLetters(), Arrays.asList("8","9","10")));
+                        System.out.println("el barco: "+ type +" puede ocupar las celdas: " + validCells + " en forma "+ orientation);
+                        newShip.setLocations(selectCells(numberOfCells, validCells,true, invalidPos));
                         break;
                     case "vertical":
-                        yValues.removeAll(List.of("H","I","J"));
-                        newShip.setLocations(selectCells(numberOfCells,xValues,yValues,false, invalidPos));
+                        validCells.removeAll(createPosToErase(Arrays.asList("H","I","J"), Grid.getNumbers()));
+                        System.out.println("el barco: "+ type +" puede ocupar las celdas: " + validCells + " en forma "+ orientation);
+                        newShip.setLocations(selectCells(numberOfCells, validCells,false, invalidPos));
                         break;
                 }
                 break;
@@ -677,12 +687,14 @@ public class SalvoController {
                 newShip.setType(type);
                 switch(orientation){
                     case "horizontal":
-                        xValues.removeIf(integer -> integer > 6);
-                        newShip.setLocations(selectCells(numberOfCells,xValues,yValues,true, invalidPos));
+                        validCells.removeAll(createPosToErase(Grid.getLetters(), Arrays.asList("7","8","9","10")));
+                        System.out.println("el barco: "+ type +" puede ocupar las celdas: " + validCells + " en forma "+ orientation);
+                        newShip.setLocations(selectCells(numberOfCells, validCells,true, invalidPos));
                         break;
                     case "vertical":
-                        yValues.removeAll(List.of("G","H","I","J"));
-                        newShip.setLocations(selectCells(numberOfCells,xValues,yValues,false, invalidPos));
+                        validCells.removeAll(createPosToErase(Arrays.asList("G","H","I","J"), Grid.getNumbers()));
+                        System.out.println("el barco: "+ type +" puede ocupar las celdas: " + validCells + " en forma "+ orientation);
+                        newShip.setLocations(selectCells(numberOfCells, validCells,false, invalidPos));
                         break;
                 }
         }
@@ -690,23 +702,48 @@ public class SalvoController {
         return newShip;
     }
 
-    private List<String> selectCells(Integer num, List<Integer> xValues, List<String> yValues, Boolean isHorizontal, List<String> invalidPos){
+    private List<String> selectCells(Integer num, List<String> validCells, Boolean isHorizontal, List<String> invalidPos){
         List<String> rtn= new ArrayList<>();
         Random picker= new Random();
-        String fstLetter=yValues.get(picker.nextInt(yValues.size()));
-        int fstNumber=xValues.get(picker.nextInt(xValues.size()));
+        List<String> allPositions= new Grid().getCells();
+        String fstCell;
+        validCells.removeAll(invalidPos);
 
-        rtn.add( fstLetter + fstNumber);
+
+        fstCell= validCells.get(picker.nextInt(validCells.size()));
+        rtn.add(fstCell);
 
 
         if(isHorizontal){
-            for(int i=0; i<num-1; i++){
-                rtn.add(fstLetter + fstNumber++);
+            for(int i=1; i<num; i++){
+                System.out.println(allPositions.get(allPositions.indexOf(fstCell)+i));
+
+                rtn.add(allPositions.get(allPositions.indexOf(fstCell)+i));
+
+                System.out.println(rtn);
             }
         }else{
-            char letter= fstLetter.charAt(0);
-            for(int i=0; i<num-1; i++){
-                rtn.add(String.valueOf(letter++) + fstNumber);
+            for(int i=1; i<num; i++){
+                System.out.println(allPositions.get(allPositions.indexOf(fstCell)+10*i));
+                rtn.add(allPositions.get(allPositions.indexOf(fstCell)+10*i));
+                System.out.println(rtn);
+            }
+        }
+
+        if(rtn.stream().anyMatch(cell -> invalidPos.contains(cell))){
+            invalidPos.addAll(rtn);
+            return selectCells(num, validCells, isHorizontal, invalidPos);
+        }else{
+            return rtn;
+        }
+    }
+
+    static private List<String> createPosToErase(List<String> letters, List<String> numbers){
+        List<String> rtn= new ArrayList<>();
+
+        for(int i=0; i<letters.size(); i++){
+            for(int j=0; j<numbers.size(); j++){
+                rtn.add(letters.get(i) + numbers.get(j));
             }
         }
 
