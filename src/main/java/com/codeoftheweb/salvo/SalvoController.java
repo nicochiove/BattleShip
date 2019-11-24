@@ -274,6 +274,16 @@ public class SalvoController {
                                 dto.put("OK", "Salvo Created");
                                 status = HttpStatus.CREATED;
 
+                                GamePlayer rivalGP= gp.getGame().getGamePlayers().stream().filter(gamePlayer -> gamePlayer.getPlayer().getId() != getUser(authentication).getId()).findFirst().orElse(null);
+
+                                if(rivalGP != null) {
+                                    if (rivalGP.getPlayer().isBot()) {
+
+                                        rivalGP.addSalvo(botSendSalvo(rivalGP));
+
+                                        gamePlayerRepository.save(rivalGP);
+                                    }
+                                }
                             } else {
                                 dto.put("Error", "Turn already played");
                                 status = HttpStatus.ALREADY_REPORTED;
@@ -473,8 +483,8 @@ public class SalvoController {
         Game game = gp.getGame();
         GamePlayer rivalGp = game.getGamePlayers().stream().filter(gamePlayer -> gamePlayer.getPlayer().getId() != gp.getPlayer().getId()).findFirst().orElse(null);
         List<Map<String, Object>> rtn = new ArrayList<>();
-        List<Object> rivalSunkShips = new ArrayList<>();
-        List<Object> mySunkShips = new ArrayList<>();
+        List<Map<String,Object>> rivalSunkShips = new ArrayList<>();
+        List<Map<String,Object>> mySunkShips = new ArrayList<>();
         Map<String, Object> dto = new HashMap<>();
         Map<String, Object> shipInfo = new HashMap<>();
 
@@ -580,13 +590,14 @@ public class SalvoController {
         return stateOfGame;
     }
 
-
+    //INDICA SI EL JUGADOR ES EL P1
     private boolean areYouP1(GamePlayer gp){
         GamePlayer rivalGP= gp.getGame().getGamePlayers().stream().filter(gamePlayer -> gamePlayer.getPlayer().getId() != gp.getPlayer().getId()).findFirst().orElse(null);
 
         return gp.getId() < rivalGP.getId();
     }
 
+    //UBICA LOS BARCOS DEL BOT
     private boolean botPlaceShips(GamePlayer botgp){
 
         Random orientationPicker= new Random();
@@ -609,7 +620,7 @@ public class SalvoController {
         return false;
     }
 
-
+    //POR CADA BARCO ELIGE LAS UBICACIONES
     private Ship chooseBotShipLocations(String orientation, ShipTypes type,List<String> invalidPos){
         int numberOfCells;
         Ship newShip= new Ship();
@@ -702,6 +713,7 @@ public class SalvoController {
         return newShip;
     }
 
+    //SELECCIONA LAS CELDAS PARA CADA BARCO
     private List<String> selectCells(Integer num, List<String> validCells, Boolean isHorizontal, List<String> invalidPos){
         List<String> rtn= new ArrayList<>();
         Random picker= new Random();
@@ -738,6 +750,7 @@ public class SalvoController {
         }
     }
 
+    //DADOS UNA LISTA DE LETRAS Y UNA DE NUMERO CREA LAS CELDAS
     static private List<String> createPosToErase(List<String> letters, List<String> numbers){
         List<String> rtn= new ArrayList<>();
 
@@ -746,6 +759,265 @@ public class SalvoController {
                 rtn.add(letters.get(i) + numbers.get(j));
             }
         }
+
+        return rtn;
+    }
+
+    private Salvo botSendSalvo(GamePlayer gp){
+        Salvo botSalvo= new Salvo();
+
+        botSalvo.setTurn(setTurn(gp));
+
+        botSalvo.setLocations(botSalvoLocations(gp));
+
+        return botSalvo;
+    }
+
+    private Set<String> botSalvoLocations(GamePlayer gp){
+        Set<String> rtn= new HashSet<>();
+        List<String> firedSalvos= new ArrayList<>();
+        List<String> fullGrid= new Grid().getCells();
+        List<String> selectableCells= new ArrayList<>();
+        int availableSalvos;
+
+        gp.getSalvoes().forEach(salvo -> firedSalvos.addAll(salvo.getLocations()));
+        fullGrid.removeAll(firedSalvos);
+        selectableCells.addAll(fullGrid);
+
+        availableSalvos= myAfloatBoats(gp);
+        rtn= selectCellsToFire(availableSalvos, firedSalvos, selectableCells, gp);
+
+        return rtn;
+    }
+
+    //Elige las celdas donde ira el nuevo salvo
+    private Set<String> selectCellsToFire(int availableSalvos, List<String> firedSalvos, List<String> selectableCells, GamePlayer gp) {
+        Set<String> rtn= new HashSet<>();
+        Random picker= new Random();
+        Grid grid= new Grid();
+        List<String> hits= didIHitSomething(gp);
+        List<String> sunkenShipsPositions= sunkenRivalShipsPositions(gp);
+
+        //Crea las diagonales de cada cuadrante para disparar
+        List<String> diagonalsC1= grid.createDiagonals(grid.getC1());
+        List<String> diagonalsC2= grid.createDiagonals(grid.getC2());
+        List<String> diagonalsC3= grid.createDiagonals(grid.getC3());
+        List<String> diagonalsC4= grid.createDiagonals(grid.getC4());
+
+        //Remueve de cada diagonal las ubicaciones donde ya se disparo
+        diagonalsC1.removeAll(firedSalvos);
+        diagonalsC2.removeAll(firedSalvos);
+        diagonalsC3.removeAll(firedSalvos);
+        diagonalsC4.removeAll(firedSalvos);
+
+        //Remueve de las ubicaciones aquellas que pertenecen a un barco ya hundido
+        hits.removeAll(sunkenShipsPositions);
+
+        if(hits.size() == 0){
+            //caso en el que aun no se golpeo ningún barco o ya se hundieron los golpeados anteriormente
+            switch(availableSalvos){
+                case 5:
+
+                    rtn.add(diagonalsC1.get(picker.nextInt(diagonalsC1.size())));
+
+                    rtn.add(diagonalsC2.get(picker.nextInt(diagonalsC2.size())));
+
+                    rtn.add(diagonalsC3.get(picker.nextInt(diagonalsC3.size())));
+
+                    rtn.add(diagonalsC4.get(picker.nextInt(diagonalsC4.size())));
+
+                    rtn.add(diagonalsC1.get(picker.nextInt(diagonalsC1.size())));
+                    break;
+
+                case 4:
+
+                    rtn.add(diagonalsC1.get(picker.nextInt(diagonalsC1.size())));
+
+                    rtn.add(diagonalsC2.get(picker.nextInt(diagonalsC2.size())));
+
+                    rtn.add(diagonalsC3.get(picker.nextInt(diagonalsC3.size())));
+
+                    rtn.add(diagonalsC4.get(picker.nextInt(diagonalsC4.size())));
+
+                    break;
+
+                case 3:
+                case 2:
+                case 1:
+
+                    List<List<String>> quadrantsLessToMost = whichQuadrantsHasLessSalvos(diagonalsC1, diagonalsC2, diagonalsC3, diagonalsC4);
+
+                    for(int i=0; i<availableSalvos;i++){
+                        rtn.add(quadrantsLessToMost.get(i).get(picker.nextInt(quadrantsLessToMost.get(i).size())));
+                    }
+
+                    break;
+            }
+        }else{
+            //caso en el que hay barcos golpeados sin hundir
+            if(hits.size() == 1){
+
+                List<String> adjacentCells= nextCells(hits.get(0));
+
+                for(int i=0; i<adjacentCells.size(); i++){
+                    if(availableSalvos > rtn.size()){
+                        rtn.add(adjacentCells.get(i));
+                    }
+                }
+
+                while(availableSalvos > rtn.size()){
+
+                    List<List<String>> quadrantsLessToMost = whichQuadrantsHasLessSalvos(diagonalsC1, diagonalsC2, diagonalsC3, diagonalsC4);
+                    List<String> randomQuad= quadrantsLessToMost.get(picker.nextInt(quadrantsLessToMost.size()));
+
+                    rtn.add(randomQuad.get(picker.nextInt(randomQuad.size())));
+
+                }
+            }
+
+        }
+
+        return rtn;
+
+    }
+
+    //Devuelve los diagonales ordenadas de menor cantidad de tiros a mayor
+    private List<List<String>> whichQuadrantsHasLessSalvos(List<String> diagonalsC1, List<String> diagonalsC2, List<String> diagonalsC3, List<String> diagonalsC4) {
+        List<List<String>> quadrants= new ArrayList<>();
+
+        quadrants.add(diagonalsC1);
+        quadrants.add(diagonalsC2);
+        quadrants.add(diagonalsC3);
+        quadrants.add(diagonalsC4);
+
+        quadrants.sort(Comparator.comparingInt(List::size));
+
+        return quadrants;
+    }
+
+    //Devuelve la cantidad de barcos aun a flote que tiene el bot
+    private int myAfloatBoats(GamePlayer gp){
+        Game game= gp.getGame();
+        GamePlayer rivalGP= game.getGamePlayers().stream().filter(gamePlayer -> gamePlayer.getPlayer().getId() != gp.getPlayer().getId()).findFirst().orElse(null);
+        int sunken=0;
+        List<String> allRivalSalvos= new ArrayList<>();
+
+        for(Salvo salvo : rivalGP.getSalvoes()){
+
+            allRivalSalvos.addAll(salvo.getLocations());
+
+        }
+
+        for(Ship ship : gp.getShips()){
+
+            if(allRivalSalvos.containsAll(ship.getLocations())){
+                sunken++;
+            }
+        }
+
+        return 5-sunken;
+
+    }
+
+
+    //Devuelve las posiciones de los barcos hundidos del rival
+    private List<String> sunkenRivalShipsPositions(GamePlayer gp){
+
+        Game game= gp.getGame();
+        GamePlayer rivalGp = game.getGamePlayers().stream().filter(gamePlayer -> gamePlayer.getPlayer().getId() != gp.getPlayer().getId()).findFirst().orElse(null);
+        List<String> rivalSunkShips = new ArrayList<>();
+
+        for (Ship ship : rivalGp.getShips()) {
+
+            Set<String> ubicaciones = new HashSet<>(ship.getLocations());
+            Set<String> allSalvos = new HashSet<>();
+
+            for (Salvo salvo : gp.getSalvoes()) {
+                allSalvos.addAll(salvo.getLocations());
+            }
+
+            if (allSalvos.containsAll(ubicaciones)) {
+                rivalSunkShips.addAll(ship.getLocations());
+            }
+        }
+
+        return rivalSunkShips;
+    }
+
+
+    private List<List<String>> consecutiveHitCells(List<String> hits){
+        return null;
+    }
+
+    //Devuelve las celdas adyacentes a una celda
+    private List<String> nextCells(String cell){
+        List<String> rtn= new ArrayList<>();
+        String cellLetter= cell.substring(0,1);
+        String cellNumber= cell.substring(1);
+        String cornerLU= "A1";
+        String cornerLD= "J1";
+        String cornerRU= "A10";
+        String cornerRD= "J10";
+        Grid grid= new Grid();
+        int indexOfCellFullGrid= grid.getCells().indexOf(cell);
+
+        if(cell.equals(cornerLU)) {
+            rtn.addAll(Arrays.asList("A2","B1"));
+            return rtn;
+        }
+        if(cell.equals(cornerLD)){
+            rtn.addAll(Arrays.asList("J2","I1"));
+            return rtn;
+        }
+        if(cell.equals(cornerRD)){
+            rtn.addAll(Arrays.asList("J9","I10"));
+            return rtn;
+        }
+        if(cell.equals(cornerRU)){
+            rtn.addAll(Arrays.asList("A9","B10"));
+            return rtn;
+        }
+
+        if(cellLetter.equals("A")){
+
+            rtn.add(grid.getCells().get(indexOfCellFullGrid - 1));
+            rtn.add(grid.getCells().get(indexOfCellFullGrid + 1));
+            rtn.add(grid.getCells().get(indexOfCellFullGrid + 10));
+
+            return rtn;
+        }
+
+        if(cellLetter.equals("J")){
+
+            rtn.add(grid.getCells().get(indexOfCellFullGrid - 1));
+            rtn.add(grid.getCells().get(indexOfCellFullGrid + 1));
+            rtn.add(grid.getCells().get(indexOfCellFullGrid - 10));
+
+            return rtn;
+        }
+
+        if(cellNumber.equals("1")){
+
+            rtn.add(grid.getCells().get(indexOfCellFullGrid - 10));
+            rtn.add(grid.getCells().get(indexOfCellFullGrid + 1));
+            rtn.add(grid.getCells().get(indexOfCellFullGrid + 10));
+
+            return rtn;
+        }
+
+        if(cellNumber.equals("10")){
+
+            rtn.add(grid.getCells().get(indexOfCellFullGrid - 10));
+            rtn.add(grid.getCells().get(indexOfCellFullGrid - 1));
+            rtn.add(grid.getCells().get(indexOfCellFullGrid + 10));
+
+            return rtn;
+        }
+
+        rtn.add(grid.getCells().get(indexOfCellFullGrid + 1));
+        rtn.add(grid.getCells().get(indexOfCellFullGrid - 1));
+        rtn.add(grid.getCells().get(indexOfCellFullGrid + 10));
+        rtn.add(grid.getCells().get(indexOfCellFullGrid - 10));
 
         return rtn;
     }

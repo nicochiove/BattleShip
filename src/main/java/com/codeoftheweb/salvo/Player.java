@@ -24,6 +24,8 @@ public class Player {
     @OneToMany(mappedBy = "player", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     private Set<Score> scores= new HashSet<>();
 
+    private boolean bot= false;
+
     //CONSTRUCTORES
     public Player() { }
 
@@ -85,6 +87,13 @@ public class Player {
         this.password = password;
     }
 
+    public boolean isBot(){
+        return this.bot;
+    }
+
+    public void setBot(){
+        this.bot= true;
+    }
 
     //DTOs
     public Map<String,Object> playerDTO(){

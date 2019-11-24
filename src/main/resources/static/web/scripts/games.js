@@ -117,6 +117,7 @@ function logout(){
         })
 }
 
+
 //CREA LA LISTA DE LOS JUEGOS JUGADOS Y EN JUEGO
 function listarJuegos() {
     let lista= document.getElementById('listaGames');
@@ -308,7 +309,7 @@ function createGameVSBot(){
 
     if(jsonGames.player !== "guest"){
 
-        fetch(urlAPI.vsbot, {method: "POST"})
+        fetch(urlAPI.vsBot, {method: "POST"})
             .then(function(response){
                 
                 return response.json();
@@ -317,7 +318,7 @@ function createGameVSBot(){
                 if(json['GamePlayer_Id']){
                     window.location.href = `/web/game.html?gp=${json['GamePlayer_Id']}`;
                 }else{
-                    errorMsg= json['error'];
+                    errorMsg= json['Error'];
                     document.getElementById('error_modal_body').innerHTML= `<h4>${errorMsg}</h4>`
                     $('#error_modal_body').modal('show')
                 }
