@@ -958,20 +958,24 @@ public class SalvoController {
                     String orientation= discoverOrientation(aux);
 
                     if(orientation.equals("horizontal")){
-                        while(nextAdjCellByDirection("lf", aux.get(0)) != null && hits.contains(nextAdjCellByDirection("lf", aux.get(0))) && !alreadyFired.contains(nextAdjCellByDirection("lf", aux.get(0)))){
-                            aux.add(nextAdjCellByDirection("lf", aux.get(0)));
+                        String prevCell= nextAdjCellByDirection("lf", aux.get(0));
+                        String nxtCell= nextAdjCellByDirection("rt", aux.get(aux.size()-1));
+                        if( prevCell != null && hits.contains(prevCell) && !alreadyFired.contains(prevCell){
+                            aux.add(prevCell);
                         }
 
-                        while(nextAdjCellByDirection("rt", aux.get(0)) != null && hits.contains(nextAdjCellByDirection("rt", aux.get(0))) && !alreadyFired.contains(nextAdjCellByDirection("rt", aux.get(0)))){
-                            aux.add(nextAdjCellByDirection("rt", aux.get(0)));
+                        if( nxtCell != null && hits.contains(nxtCell) && !alreadyFired.contains(nxtCell){
+                            aux.add(nxtCell);
                         }
                     }else{
-                        while(nextAdjCellByDirection("up", aux.get(0)) != null && hits.contains(nextAdjCellByDirection("up", aux.get(0))) && !alreadyFired.contains(nextAdjCellByDirection("up", aux.get(0)))){
-                            aux.add(nextAdjCellByDirection("up", aux.get(0)));
+                        String upCell= nextAdjCellByDirection("up", aux.get(0));
+                        String dwCell= nextAdjCellByDirection("dw", aux.get(aux.size()-1));
+                        if(upCell != null && hits.contains(upCell) && !alreadyFired.contains(upCell){
+                            aux.add(upCell);
                         }
 
-                        while(nextAdjCellByDirection("dw", aux.get(0)) != null && hits.contains(nextAdjCellByDirection("dw", aux.get(0))) && !alreadyFired.contains(nextAdjCellByDirection("dw", aux.get(0)))){
-                            aux.add(nextAdjCellByDirection("dw", aux.get(0)));
+                        if(dwCell != null && hits.contains(dwCell) && !alreadyFired.contains(dwCell){
+                            aux.add(dwCell);
                         }
                     }
                 }
@@ -1161,7 +1165,8 @@ public class SalvoController {
                 List<List<String>> quadrantsLessToMost = whichQuadrantsHasLessSalvos(diagonalsC1, diagonalsC2, diagonalsC3, diagonalsC4);
 
                 for(int i=0; i<availableSalvos;i++){
-                    rtn.add(quadrantsLessToMost.get(i).get(picker.nextInt(quadrantsLessToMost.get(i).size())));
+                    String selectedCell= quadrantsLessToMost.get(i).get(picker.nextInt(quadrantsLessToMost.get(i).size()));
+                    rtn.add(selectedCell);
                 }
 
                 break;
