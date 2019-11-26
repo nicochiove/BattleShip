@@ -479,6 +479,7 @@ public class SalvoController {
         return rtn;
     }
 
+    //FUNCION QUE DEVUELVE BARCOS CONTRARIOS HUNDIDOS
     private List<Map<String, Object>> didISinkSomething(GamePlayer gp) {
         Game game = gp.getGame();
         GamePlayer rivalGp = game.getGamePlayers().stream().filter(gamePlayer -> gamePlayer.getPlayer().getId() != gp.getPlayer().getId()).findFirst().orElse(null);
@@ -763,6 +764,7 @@ public class SalvoController {
         return rtn;
     }
 
+    //Crea y devuelve el Salvo del bot
     private Salvo botSendSalvo(GamePlayer gp){
         Salvo botSalvo= new Salvo();
 
@@ -773,6 +775,7 @@ public class SalvoController {
         return botSalvo;
     }
 
+    //Agrega al salvo las locations
     private Set<String> botSalvoLocations(GamePlayer gp){
         Set<String> rtn= new HashSet<>();
         List<String> firedSalvos= new ArrayList<>();
@@ -815,64 +818,59 @@ public class SalvoController {
 
         if(hits.size() == 0){
             //caso en el que aun no se golpeo ningún barco o ya se hundieron los golpeados anteriormente
-            switch(availableSalvos){
-                case 5:
+            rtn= noHitsShootRandom(availableSalvos, diagonalsC1, diagonalsC2, diagonalsC3, diagonalsC4);
 
-                    rtn.add(diagonalsC1.get(picker.nextInt(diagonalsC1.size())));
-
-                    rtn.add(diagonalsC2.get(picker.nextInt(diagonalsC2.size())));
-
-                    rtn.add(diagonalsC3.get(picker.nextInt(diagonalsC3.size())));
-
-                    rtn.add(diagonalsC4.get(picker.nextInt(diagonalsC4.size())));
-
-                    rtn.add(diagonalsC1.get(picker.nextInt(diagonalsC1.size())));
-                    break;
-
-                case 4:
-
-                    rtn.add(diagonalsC1.get(picker.nextInt(diagonalsC1.size())));
-
-                    rtn.add(diagonalsC2.get(picker.nextInt(diagonalsC2.size())));
-
-                    rtn.add(diagonalsC3.get(picker.nextInt(diagonalsC3.size())));
-
-                    rtn.add(diagonalsC4.get(picker.nextInt(diagonalsC4.size())));
-
-                    break;
-
-                case 3:
-                case 2:
-                case 1:
-
-                    List<List<String>> quadrantsLessToMost = whichQuadrantsHasLessSalvos(diagonalsC1, diagonalsC2, diagonalsC3, diagonalsC4);
-
-                    for(int i=0; i<availableSalvos;i++){
-                        rtn.add(quadrantsLessToMost.get(i).get(picker.nextInt(quadrantsLessToMost.get(i).size())));
-                    }
-
-                    break;
-            }
         }else{
             //caso en el que hay barcos golpeados sin hundir
             if(hits.size() == 1){
 
-                List<String> adjacentCells= nextCells(hits.get(0));
+                rtn.addAll(shootAroundOneHit(hits, firedSalvos, availableSalvos, diagonalsC1,diagonalsC2,diagonalsC3,diagonalsC4));
 
-                for(int i=0; i<adjacentCells.size(); i++){
-                    if(availableSalvos > rtn.size()){
-                        rtn.add(adjacentCells.get(i));
+            }else{
+                //Caso donde hay más de un HIT
+                if(anyConsecutiveCells(hits)) {
+
+                    List<List<String>> consecutiveHitsList = consecutiveHitCells(hits, firedSalvos);
+
+                    if (consecutiveHitsList.size() == 1) {
+                        rtn.add(suggestNxtCell(consecutiveHitsList.get(0), firedSalvos));
+
+                        while (availableSalvos > rtn.size()) {
+
+                            List<List<String>> quadrantsLessToMost = whichQuadrantsHasLessSalvos(diagonalsC1, diagonalsC2, diagonalsC3, diagonalsC4);
+                            List<String> randomQuad = quadrantsLessToMost.get(picker.nextInt(quadrantsLessToMost.size()));
+
+                            rtn.add(randomQuad.get(picker.nextInt(randomQuad.size())));
+
+                        }
+
+                    } else {
+                        for (List<String> list : consecutiveHitsList) {
+
+                            rtn.add(suggestNxtCell(list, firedSalvos));
+
+                        }
+
+                        while (availableSalvos > rtn.size()) {
+
+                            List<List<String>> quadrantsLessToMost = whichQuadrantsHasLessSalvos(diagonalsC1, diagonalsC2, diagonalsC3, diagonalsC4);
+                            List<String> randomQuad = quadrantsLessToMost.get(picker.nextInt(quadrantsLessToMost.size()));
+
+                            rtn.add(randomQuad.get(picker.nextInt(randomQuad.size())));
+
+                        }
+
+                        if (rtn.size() > availableSalvos) {
+                            List<String> aux = new ArrayList<>(rtn);
+                            aux.removeIf(elem -> aux.indexOf(elem) > availableSalvos - 1);
+                            rtn.clear();
+                            rtn.addAll(aux);
+                        }
                     }
+                }else{
+                    rtn= shootAroundOneHit(hits, firedSalvos, availableSalvos, diagonalsC1, diagonalsC2, diagonalsC3, diagonalsC4);
                 }
 
-                while(availableSalvos > rtn.size()){
-
-                    List<List<String>> quadrantsLessToMost = whichQuadrantsHasLessSalvos(diagonalsC1, diagonalsC2, diagonalsC3, diagonalsC4);
-                    List<String> randomQuad= quadrantsLessToMost.get(picker.nextInt(quadrantsLessToMost.size()));
-
-                    rtn.add(randomQuad.get(picker.nextInt(randomQuad.size())));
-
-                }
             }
 
         }
@@ -944,9 +942,51 @@ public class SalvoController {
         return rivalSunkShips;
     }
 
+    //Devuelve una lista de listas con ubicaciones de hits consecutivos, de mayor a menor
+    private List<List<String>> consecutiveHitCells(List<String> hits, List<String> alreadyFired){
+        List<List<String>> rtn= new ArrayList<>();
+        List<String> aux= new ArrayList<>();
 
-    private List<List<String>> consecutiveHitCells(List<String> hits){
-        return null;
+        for(String cell : hits){
+            List<String> adjacentCells= nextCells(cell);
+            aux.add(cell);
+
+            for(String adjCell : adjacentCells){
+                if(hits.contains(adjCell)){
+                    aux.add(adjCell);
+                    Collections.sort(aux);
+                    String orientation= discoverOrientation(aux);
+
+                    if(orientation.equals("horizontal")){
+                        while(nextAdjCellByDirection("lf", aux.get(0)) != null && hits.contains(nextAdjCellByDirection("lf", aux.get(0))) && !alreadyFired.contains(nextAdjCellByDirection("lf", aux.get(0)))){
+                            aux.add(nextAdjCellByDirection("lf", aux.get(0)));
+                        }
+
+                        while(nextAdjCellByDirection("rt", aux.get(0)) != null && hits.contains(nextAdjCellByDirection("rt", aux.get(0))) && !alreadyFired.contains(nextAdjCellByDirection("rt", aux.get(0)))){
+                            aux.add(nextAdjCellByDirection("rt", aux.get(0)));
+                        }
+                    }else{
+                        while(nextAdjCellByDirection("up", aux.get(0)) != null && hits.contains(nextAdjCellByDirection("up", aux.get(0))) && !alreadyFired.contains(nextAdjCellByDirection("up", aux.get(0)))){
+                            aux.add(nextAdjCellByDirection("up", aux.get(0)));
+                        }
+
+                        while(nextAdjCellByDirection("dw", aux.get(0)) != null && hits.contains(nextAdjCellByDirection("dw", aux.get(0))) && !alreadyFired.contains(nextAdjCellByDirection("dw", aux.get(0)))){
+                            aux.add(nextAdjCellByDirection("dw", aux.get(0)));
+                        }
+                    }
+                }
+//                rtn.add(aux);
+//                hits.removeAll(aux);
+
+            }
+            rtn.add(aux);
+            hits.removeAll(aux);
+        }
+
+        rtn.sort(Comparator.comparingInt(List::size));
+        Collections.reverse(rtn);
+
+        return rtn;
     }
 
     //Devuelve las celdas adyacentes a una celda
@@ -1021,7 +1061,159 @@ public class SalvoController {
 
         return rtn;
     }
+
+    //Con una lista de dos celdas consecutivas descubre si la orientacion del barco es vertical u horizontal
+    private String discoverOrientation(List<String> consecutiveCells){
+        if(consecutiveCells.get(0).charAt(0) == (consecutiveCells.get(1).charAt(0))){
+            return "horizontal";
+        }else{
+            return "vertical";
+        }
+    }
+
+    //devuelve la celda adyacente en la direccion elegida, si no hay devuelve null
+    private String nextAdjCellByDirection(String direction, String cell){
+        List<String> fullGrid= new Grid().getCells();
+        int idxFullGrid= fullGrid.indexOf(cell);
+        try {
+            switch (direction) {
+                case "up":
+                    return fullGrid.get(idxFullGrid - 10);
+
+                case "dw":
+                    return fullGrid.get(idxFullGrid + 10);
+
+                case "lf":
+                    return fullGrid.get(idxFullGrid - 1);
+
+                case "rt":
+                    return fullGrid.get(idxFullGrid + 1);
+
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    //Dispara alrededor de un unico Hit en todas las direcciones, si sobran salvos dispara random
+    private Set<String> shootAroundOneHit(List<String> hits, List<String> firedSalvos, int availableSalvos, List<String> diagonalsC1, List<String> diagonalsC2, List<String> diagonalsC3, List<String> diagonalsC4){
+        Set<String> rtn= new HashSet<>();
+        Random picker= new Random();
+
+        List<String> adjacentCells= nextCells(hits.get(0));
+        adjacentCells.removeAll(firedSalvos);
+
+        for(int i=0; i<adjacentCells.size(); i++){
+            if(availableSalvos > rtn.size()){
+                rtn.add(adjacentCells.get(i));
+            }
+        }
+
+        while(availableSalvos > rtn.size()){
+
+            List<List<String>> quadrantsLessToMost = whichQuadrantsHasLessSalvos(diagonalsC1, diagonalsC2, diagonalsC3, diagonalsC4);
+            List<String> randomQuad= quadrantsLessToMost.get(picker.nextInt(quadrantsLessToMost.size()));
+
+            rtn.add(randomQuad.get(picker.nextInt(randomQuad.size())));
+
+        }
+        return rtn;
+    }
+
+    //Si no hay hits para disparar alrededor diapara de forma aleatoria
+    private Set<String> noHitsShootRandom(int availableSalvos, List<String> diagonalsC1, List<String> diagonalsC2, List<String> diagonalsC3, List<String> diagonalsC4) {
+
+        Random picker= new Random();
+        Set<String> rtn= new HashSet<>();
+
+        switch(availableSalvos){
+            case 5:
+                String fstShot= diagonalsC1.get(picker.nextInt(diagonalsC1.size()));
+                rtn.add(fstShot);
+                diagonalsC1.remove(fstShot);
+
+                rtn.add(diagonalsC2.get(picker.nextInt(diagonalsC2.size())));
+
+                rtn.add(diagonalsC3.get(picker.nextInt(diagonalsC3.size())));
+
+                rtn.add(diagonalsC4.get(picker.nextInt(diagonalsC4.size())));
+
+                rtn.add(diagonalsC1.get(picker.nextInt(diagonalsC1.size())));
+                break;
+
+            case 4:
+
+                rtn.add(diagonalsC1.get(picker.nextInt(diagonalsC1.size())));
+
+                rtn.add(diagonalsC2.get(picker.nextInt(diagonalsC2.size())));
+
+                rtn.add(diagonalsC3.get(picker.nextInt(diagonalsC3.size())));
+
+                rtn.add(diagonalsC4.get(picker.nextInt(diagonalsC4.size())));
+
+                break;
+
+            case 3:
+            case 2:
+            case 1:
+
+                List<List<String>> quadrantsLessToMost = whichQuadrantsHasLessSalvos(diagonalsC1, diagonalsC2, diagonalsC3, diagonalsC4);
+
+                for(int i=0; i<availableSalvos;i++){
+                    rtn.add(quadrantsLessToMost.get(i).get(picker.nextInt(quadrantsLessToMost.get(i).size())));
+                }
+
+                break;
+        }
+        return rtn;
+    }
+
+    //Sugiere la proxima celda para disparar a un barco
+    private String suggestNxtCell(List<String> cells, List<String> alreadyShot){
+        String orient= discoverOrientation(cells);
+
+        if(orient.equals("horizontal")){
+            String prevCell= nextAdjCellByDirection("lf", cells.get(0));
+            String nxtCell= nextAdjCellByDirection("lf", cells.get(cells.size()-1));
+
+            if(prevCell != null && prevCell.charAt(0) == cells.get(0).charAt(0) && !alreadyShot.contains(prevCell)){
+                return prevCell;
+            }
+            if(nxtCell != null && nxtCell.charAt(0) == cells.get(cells.size()-1).charAt(0) && !alreadyShot.contains(nxtCell)){
+                return nxtCell;
+            }
+        }else{
+            String prevCell= nextAdjCellByDirection("up", cells.get(0));
+            String nxtCell= nextAdjCellByDirection("dw", cells.get(cells.size()-1));
+
+            if(prevCell != null && prevCell.substring(1).equals(cells.get(0).substring(1)) && !alreadyShot.contains(prevCell)){
+                return prevCell;
+            }
+            if(nxtCell != null && nxtCell.substring(1).equals(cells.get(cells.size()-1)) && !alreadyShot.contains(nxtCell)){
+                return nxtCell;
+            }
+        }
+        return null;
+    }
+
+    private boolean anyConsecutiveCells(List<String> hitCells) {
+
+        for(String cell : hitCells){
+            for(String nxtCell : nextCells(cell)){
+                if(hitCells.contains(nxtCell)){
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+
+
+
 }
+
 
 
 
