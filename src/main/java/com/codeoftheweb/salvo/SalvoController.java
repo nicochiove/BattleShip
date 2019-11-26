@@ -960,21 +960,21 @@ public class SalvoController {
                     if(orientation.equals("horizontal")){
                         String prevCell= nextAdjCellByDirection("lf", aux.get(0));
                         String nxtCell= nextAdjCellByDirection("rt", aux.get(aux.size()-1));
-                        if( prevCell != null && hits.contains(prevCell) && !alreadyFired.contains(prevCell){
+                        if( prevCell != null && hits.contains(prevCell) && !alreadyFired.contains(prevCell)){
                             aux.add(prevCell);
                         }
 
-                        if( nxtCell != null && hits.contains(nxtCell) && !alreadyFired.contains(nxtCell){
+                        if( nxtCell != null && hits.contains(nxtCell) && !alreadyFired.contains(nxtCell)){
                             aux.add(nxtCell);
                         }
                     }else{
                         String upCell= nextAdjCellByDirection("up", aux.get(0));
                         String dwCell= nextAdjCellByDirection("dw", aux.get(aux.size()-1));
-                        if(upCell != null && hits.contains(upCell) && !alreadyFired.contains(upCell){
+                        if(upCell != null && hits.contains(upCell) && !alreadyFired.contains(upCell)){
                             aux.add(upCell);
                         }
 
-                        if(dwCell != null && hits.contains(dwCell) && !alreadyFired.contains(dwCell){
+                        if(dwCell != null && hits.contains(dwCell) && !alreadyFired.contains(dwCell)){
                             aux.add(dwCell);
                         }
                     }
