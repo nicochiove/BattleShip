@@ -986,7 +986,13 @@ public class SalvoController {
 
                 }
                 Collections.sort(aux);
-                rtn.add(new ArrayList<>(aux));
+
+                if(anyRepeatedCell(aux)){
+                    rtn.add(takeOutRepeatedValues(aux));
+                }else {
+                    rtn.add(new ArrayList<>(aux));
+                }
+                
             }
         }
         rtn.sort(Comparator.comparingInt(List::size));
@@ -1251,6 +1257,18 @@ public class SalvoController {
             }
         }
         return false;
+    }
+
+    //Devuelve si hay valores repetidos o no en una lista
+    private boolean anyRepeatedCell(List<String> lista){
+        return lista.stream().anyMatch(cell -> lista.lastIndexOf(cell) != lista.indexOf(lista));
+    }
+
+    //
+    private List<String> takeOutRepeatedValues(List<String> lista){
+        Set<String> rtn= new HashSet<>(lista);
+
+        return new ArrayList<>(rtn);
     }
 
 
