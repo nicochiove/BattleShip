@@ -890,6 +890,8 @@ public class SalvoController {
 
         quadrants.sort(Comparator.comparingInt(List::size));
 
+        Collections.reverse(quadrants);
+        
         return quadrants;
     }
 

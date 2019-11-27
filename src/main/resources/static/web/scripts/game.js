@@ -190,6 +190,8 @@ function sendSalvo(){
    
     limpiarDisplay()
 
+    shotSound();
+
     fetch(url, {method: "POST", body: JSON.stringify(data), headers: {'Content-Type': 'application/json'}})
         .then(function(response){
             if(response.ok){
@@ -308,4 +310,11 @@ function endGame(){
 //MUESTRA EL NUMERO DE TURNO
 function displayTurnNumber(){
     document.getElementById('turn_number').innerText= jsonGamePlayer.salvoes.length/2+1
+}
+
+//EFECTO DE DISPARO
+function shotSound(){
+
+    document.getElementById('cannon').play()
+    
 }

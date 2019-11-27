@@ -197,6 +197,8 @@ function openRegister(){
 //FUNCION PARA REGISTRAR UN NUEVO USUARIO
 function registerUser(){
     let formData= new FormData(document.getElementById('regForm'))
+        
+    if(formData.get('regPassword') == formData.get('regConPassword')){
         fetch(urlAPI.register,
                 {method: 'POST', body: formData})
         .then(function(response){
@@ -211,11 +213,15 @@ function registerUser(){
         }).catch(function(json){
             return json;
         }).then(function(json){
-            errorMsg= json['error'];
+            errorMsg= json['Error'];
             console.log(errorMsg)
             document.getElementById('error_modal_body').innerHTML= `<h4>${errorMsg}</h4>`
             $('#error_modal').modal('show')
         })
+    }else{
+        document.getElementById('error_modal_body').innerHTML= `<h4>Passwords don't match</h4>`
+        $('#error_modal').modal('show')
+    }
 }
 
 //SE FIJA QUE EL PASSWORD ESTE CORRECTO
