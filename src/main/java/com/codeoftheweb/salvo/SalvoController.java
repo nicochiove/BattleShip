@@ -949,7 +949,7 @@ public class SalvoController {
 
         for(String cell : hits) {
             aux.clear();
-            if (!isAContainedInB(cell, rtn)) {
+            if (!isAContainedInB(cell, rtn)){
                 List<String> adjacentCells = nextCells(cell);
                 aux.add(cell);
 
@@ -986,7 +986,7 @@ public class SalvoController {
 
                 }
                 Collections.sort(aux);
-                rtn.add(aux);
+                rtn.add(new ArrayList<>(aux));
             }
         }
         rtn.sort(Comparator.comparingInt(List::size));
@@ -1132,6 +1132,7 @@ public class SalvoController {
 
         Random picker= new Random();
         Set<String> rtn= new HashSet<>();
+        List<List<String>> quadrantsLessToMost = whichQuadrantsHasLessSalvos(diagonalsC1, diagonalsC2, diagonalsC3, diagonalsC4);
 
         switch(availableSalvos){
             case 5:
@@ -1166,7 +1167,6 @@ public class SalvoController {
 
             case 1:
 
-                List<List<String>> quadrantsLessToMost = whichQuadrantsHasLessSalvos(diagonalsC1, diagonalsC2, diagonalsC3, diagonalsC4);
 
                 for(int i=0; i<availableSalvos;i++){
                     if(quadrantsLessToMost.get(i).size() != 0) {
@@ -1187,22 +1187,13 @@ public class SalvoController {
                 break;
             case 0:
 
-                List<List<String>> quadrantsLessToMost0 = whichQuadrantsHasLessSalvos(diagonalsC1, diagonalsC2, diagonalsC3, diagonalsC4);
-
                 for(int i=0; i<availableSalvos + 1;i++){
-                    if(quadrantsLessToMost0.get(i).size() != 0) {
-                        String selectedCell = quadrantsLessToMost0.get(i).get(picker.nextInt(quadrantsLessToMost0.get(i).size()));
+                    if(quadrantsLessToMost.get(i).size() != 0) {
+                        String selectedCell = quadrantsLessToMost.get(i).get(picker.nextInt(quadrantsLessToMost.get(i).size()));
                         rtn.add(selectedCell);
                     }else{
-                        quadrantsLessToMost0.remove(i);
+                        quadrantsLessToMost.remove(i);
                     }
-                }
-                while (availableSalvos > rtn.size()) {
-
-                    List<String> randomQuad = quadrantsLessToMost0.get(picker.nextInt(quadrantsLessToMost0.size()));
-
-                    rtn.add(randomQuad.get(picker.nextInt(randomQuad.size())));
-
                 }
 
                 break;
@@ -1216,7 +1207,7 @@ public class SalvoController {
 
         if(orient.equals("horizontal")){
             String prevCell= nextAdjCellByDirection("lf", cells.get(0));
-            String nxtCell= nextAdjCellByDirection("lf", cells.get(cells.size()-1));
+            String nxtCell= nextAdjCellByDirection("rt", cells.get(cells.size()-1));
 
             if(prevCell != null && prevCell.charAt(0) == cells.get(0).charAt(0) && !alreadyShot.contains(prevCell)){
                 return prevCell;
