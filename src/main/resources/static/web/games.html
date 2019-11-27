@@ -8,7 +8,7 @@
     <link href="https://fonts.googleapis.com/css?family=Calligraffitti&display=swap" rel="stylesheet">
     <title>Salvo!</title>
 </head>
-<body onload="getFetchs()">
+<body onload="getFetchs(), playMusicAtStart()">
 
 	<div id="carga">
 		
@@ -21,7 +21,8 @@
 	</button>
 
 	<audio id="main_theme" src="sound/main_trimmed.mp3" loop></audio>
-	<button id="stop_music" onclick="stopMusic()"> SHHHH!</button>
+	<button id="stop_music" onclick="stopMusic()" style="display: none;"> SHHHH!</button>
+	<button id="play_music" onclick="playMusic()"> What's a pirate without music!</button>
 
 	<div class="modal fade" id="login_modal" tabindex="-1" role="dialog" aria-labelledby="modal_login" aria-hidden="true">
 	  <div class="modal-dialog" role="document">
@@ -47,7 +48,7 @@
 					<hr>
 
 			        <h3 class="text-center">Not a User yet?</h3>
-			        <button id="registerBot" type="button" class="btn btn-primary" data-toggle="modal" data-target="#register_modal" 
+			        <button id="registerBot" type="button" data-toggle="modal" data-target="#register_modal" 
 			        		onclick="openRegister()">
 		  				Register
 					</button>
@@ -56,7 +57,7 @@
 		    </div>
 	      </div>
 	      <div class="modal-footer">
-	        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+	        <button type="button" data-dismiss="modal">Close</button>
 	      </div>
 	    </div>
 	  </div>
@@ -103,7 +104,7 @@
 	      <div class="modal-header">
 	        <h5 class="modal-title" id="register_modal_label">Register</h5>
 	        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-	          <span aria-hidden="true">&times;</span>
+	          X<span aria-hidden="true">&times;</span>
 	        </button>
 	      </div>
 	      <div class="modal-body">
@@ -126,15 +127,17 @@
 	<div class="modal fade" id="error_modal" tabindex="-1" role="dialog" aria-labelledby="modal_error" aria-hidden="true">
 	  <div class="modal-dialog" role="document">
 	    <div class="modal-content">
-	        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-	          <span aria-hidden="true">&times;</span>
-	        </button>
+	    	<div class="modal-header">
+		        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+		          X<span aria-hidden="true">&times;</span>
+		        </button>
 	      </div>
 	      <div id="error_modal_body" class="modal-body">
 	      	
 	      </div>
 	    </div>
 	  </div>
+	 </div>
 
 	
 

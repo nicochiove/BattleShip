@@ -272,6 +272,7 @@ function gameContinue(){
             showAvailableSalvo(jsonGamePlayer)
             showShootButton()
             setSalvoes(jsonGamePlayer)
+            displayTurnNumber();
             break;
         case "PlaceShips":
             document.getElementById('place_ships').style.display= 'block'
@@ -301,5 +302,10 @@ function endGame(){
             document.getElementById('finalMsg').innerText= "YO HO! Next time won't be so lucky"
             document.getElementById('tie').style.display= 'block'
             break;
-    }
+    } 
+}
+
+//MUESTRA EL NUMERO DE TURNO
+function displayTurnNumber(){
+    document.getElementById('turn_number').innerText= jsonGamePlayer.salvoes.length/2+1
 }

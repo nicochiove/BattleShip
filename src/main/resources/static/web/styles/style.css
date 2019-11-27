@@ -14,6 +14,16 @@ h1{
 
 #cartel h1{
     font-family: 'wolves';
+    margin-top: 0;
+    margin-bottom: 0;
+}
+
+#cartel p{
+    text-align: center;
+    font-family: 'piratefont';
+    margin-top: 0;
+    margin-bottom: 0;
+    font-size: 2em;
 }
 
 .hitSpot{
@@ -45,7 +55,7 @@ h1{
     background-position: center;
     width: 10em;
     height: 6em;
-    display: block;
+    display: inline-block;
 }
 
 #dock{

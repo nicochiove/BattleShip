@@ -139,7 +139,7 @@ function listarJuegos() {
                     str += `<li>Player: ${reverseArray[i].gamePlayers[gameplayer].player.usrName}</li>`;
                     
                     if(jsonGames.player.id === reverseArray[i].gamePlayers[gameplayer].player.id){
-                        str += `<li><a href="/web/game.html?gp=${reverseArray[i].gamePlayers[gameplayer].id}"><button id="gp_${reverseArray[i].gamePlayers[gameplayer].id}" class="btn btn-danger" type="button" >Enter!</button></li></a>`
+                        str += `<li><a href="/web/game.html?gp=${reverseArray[i].gamePlayers[gameplayer].id}"><button id="gp_${reverseArray[i].gamePlayers[gameplayer].id}"  type="button" >Enter!</button></li></a>`
                     }
                 }
             }
@@ -148,10 +148,10 @@ function listarJuegos() {
                     str += `<li>Player: ${reverseArray[i].gamePlayers[gameplayer].player.usrName}</li>`;
                     
                     if(jsonGames.player.id === reverseArray[i].gamePlayers[gameplayer].player.id){
-                        str += `<li><a href="/web/game.html?gp=${reverseArray[i].gamePlayers[gameplayer].id}"><button id="gp_${reverseArray[i].gamePlayers[gameplayer].id}" class="btn btn-danger" type="button" >Enter!</button></a></li>`
+                        str += `<li><a href="/web/game.html?gp=${reverseArray[i].gamePlayers[gameplayer].id}"><button id="gp_${reverseArray[i].gamePlayers[gameplayer].id}"  type="button" >Enter!</button></a></li>`
                     }else{
                         if(jsonGames.player !== "guest"){
-                            str += `<li><button id="g_${reverseArray[i].id}" data-gameid="${reverseArray[i].id}" class="btn btn-danger" type="button" onclick="joinGame(this)" >Join Game!</button></li>`
+                            str += `<li><button id="g_${reverseArray[i].id}" data-gameid="${reverseArray[i].id}"  type="button" onclick="joinGame(this)" >Join Game!</button></li>`
                         }
                     }
                 }
@@ -201,9 +201,20 @@ function registerUser(){
                 {method: 'POST', body: formData})
         .then(function(response){
             if(response.ok){
+                document.getElementById('error_modal_body').innerHTML= `<h4>Register Successful! Please Log In</h4>`
+                $('#error_modal').modal('show')
                 $('#register_modal').modal('hide')
                 $('#login_modal').modal('show')
+            }else{
+                return Promise.reject(response.json());
             }
+        }).catch(function(json){
+            return json;
+        }).then(function(json){
+            errorMsg= json['error'];
+            console.log(errorMsg)
+            document.getElementById('error_modal_body').innerHTML= `<h4>${errorMsg}</h4>`
+            $('#error_modal').modal('show')
         })
 }
 
@@ -337,8 +348,22 @@ function createGameVSBot(){
 
 function stopMusic(){
 
-    document.getElementById('main_theme').toggleAttribute('paused')
+    document.getElementById('main_theme').pause()
+    document.getElementById('stop_music').style.display= 'none'
+    document.getElementById('play_music').style.display= 'inline-block'
 
+}
+
+function playMusicAtStart(){
+    document.getElementById('main_theme').play()
+    document.getElementById('play_music').style.display= 'none'
+    document.getElementById('stop_music').style.display= 'inline-block'
+}
+
+function playMusic(){
+    document.getElementById('main_theme').play()
+    document.getElementById('play_music').style.display= 'none'
+    document.getElementById('stop_music').style.display= 'inline-block'
 }
 
 /*

@@ -17,6 +17,36 @@ button{
 	background-color: rgba(0,0,0,0);
 }
 
+form{
+	background-color: rgba(255,255,255,0.6);
+}
+
+#registerDiv h3{
+	background-color: rgba(255,255,255,0.6);
+}
+
+.modal-content{
+	background-image: url(../assets/modal.png);
+    background-size: cover;
+    background-repeat: round;
+    background-color: rgba(0,0,0,0);
+    border: none;
+}
+
+#error_modal .modal-content{
+	background-image: url(../assets/error.jpg);
+	background-size: cover;
+}
+
+#error_modal_body{
+	background-color: rgba(255,255,255,0.5);
+	text-align: center;
+}
+
+#error_modal_body h4{
+	text-align: center;
+}
+
 #createButton, #vsbot{
 	width: 50%
 	height: 3em;

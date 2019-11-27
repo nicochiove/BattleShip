@@ -992,7 +992,7 @@ public class SalvoController {
                 }else {
                     rtn.add(new ArrayList<>(aux));
                 }
-                
+
             }
         }
         rtn.sort(Comparator.comparingInt(List::size));
