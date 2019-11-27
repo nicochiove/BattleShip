@@ -1229,6 +1229,7 @@ public class SalvoController {
         return null;
     }
 
+    //Devuelve si en una lista de celdas hay celdas que sean consecutivas
     private boolean anyConsecutiveCells(List<String> hitCells) {
 
         for(String cell : hitCells){
@@ -1241,6 +1242,7 @@ public class SalvoController {
         return false;
     }
 
+    //Devuelve si una string se encunetra en una lista
     private boolean isAContainedInB(String a, List<List<String>> b){
 
         for(List<String> list : b){
