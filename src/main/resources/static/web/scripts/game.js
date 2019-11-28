@@ -295,10 +295,12 @@ function endGame(){
         case "WIN":
             document.getElementById('finalMsg').innerText= "Great Battle Captain, Time for some LOOTING!"
             document.getElementById('lootimg').style.display= 'block'
+            document.getElementById('winner_sound').play()
             break;
         case "LOSS":
             document.getElementById('finalMsg').innerText= "Aarghh Mate! Walk the PLANK!"
             document.getElementById('plankimg').style.display= 'block'
+            document.getElementById('loser_sound').play()
             break;
         case "TIE":
             document.getElementById('finalMsg').innerText= "YO HO! Next time won't be so lucky"
@@ -318,3 +320,12 @@ function shotSound(){
     document.getElementById('cannon').play()
     
 }
+
+/*
+function shutUpThoseSeagulls(){
+    document.getElementById('back_sound').pause()
+}
+
+function theSeagullsAreOk(){
+    document.getElementById('back_sound').play()
+}*/

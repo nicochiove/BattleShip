@@ -139,7 +139,17 @@ function listarJuegos() {
                     str += `<li>Player: ${reverseArray[i].gamePlayers[gameplayer].player.usrName}</li>`;
                     
                     if(jsonGames.player.id === reverseArray[i].gamePlayers[gameplayer].player.id){
-                        str += `<li><a href="/web/game.html?gp=${reverseArray[i].gamePlayers[gameplayer].id}"><button id="gp_${reverseArray[i].gamePlayers[gameplayer].id}"  type="button" >Enter!</button></li></a>`
+                        
+                        if(reverseArray[i].scores){
+                            if(reverseArray[i].scores.length == 0){
+                                str += `<li><a href="/web/game.html?gp=${reverseArray[i].gamePlayers[gameplayer].id}"><button id="gp_${reverseArray[i].gamePlayers[gameplayer].id}"  type="button" >Enter!</button></li></a>`
+                            }else{
+                                str += `<li><a href="/web/game.html?gp=${reverseArray[i].gamePlayers[gameplayer].id}"><button id="gp_${reverseArray[i].gamePlayers[gameplayer].id}"  type="button" >Results!</button></li></a>`
+                            }
+                        }else{
+                            str += `<li><a href="/web/game.html?gp=${reverseArray[i].gamePlayers[gameplayer].id}"><button id="gp_${reverseArray[i].gamePlayers[gameplayer].id}"  type="button" >Enter!</button></li></a>`
+                        }
+                    
                     }
                 }
             }

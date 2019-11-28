@@ -1,3 +1,6 @@
+html{
+	cursor: url("../assets/icons/cursor_flecha2.png"), auto;
+}
 body{
 	background-image: url("../assets/background-min2.jpg");
 	background-size: cover;
@@ -5,6 +8,10 @@ body{
 	max-width: 100vw !important;
 	height: 100vh;
 	padding: 0.5em;
+}
+
+button{
+	cursor: url("../assets/icons/cursor.png"), auto;
 }
 
 button{

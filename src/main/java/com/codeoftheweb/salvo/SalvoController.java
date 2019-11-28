@@ -769,7 +769,7 @@ public class SalvoController {
         Salvo botSalvo= new Salvo();
 
         botSalvo.setTurn(setTurn(gp));
-
+        botSalvo.setGamePlayer(gp);
         botSalvo.setLocations(botSalvoLocations(gp));
 
         return botSalvo;
@@ -847,7 +847,7 @@ public class SalvoController {
                     } else {
                         for (List<String> list : consecutiveHitsList) {
 
-                            rtn.add(suggestNxtCell(list, firedSalvos));
+                            rtn.add(suggestNxtCell(list, firedSalvos));//por aca hay algo
 
                         }
 
@@ -891,7 +891,7 @@ public class SalvoController {
         quadrants.sort(Comparator.comparingInt(List::size));
 
         Collections.reverse(quadrants);
-        
+
         return quadrants;
     }
 
@@ -1092,20 +1092,30 @@ public class SalvoController {
         try {
             switch (direction) {
                 case "up":
-                    return fullGrid.get(idxFullGrid - 10);
-
+                    if(idxFullGrid - 10 >= 0) {
+                        return fullGrid.get(idxFullGrid - 10);
+                    }
+                    break;
                 case "dw":
-                    return fullGrid.get(idxFullGrid + 10);
-
+                    if(idxFullGrid + 10 <= fullGrid.size()-1) {
+                        return fullGrid.get(idxFullGrid + 10);
+                    }
+                    break;
                 case "lf":
-                    return fullGrid.get(idxFullGrid - 1);
-
+                    if(idxFullGrid - 1 >= 0) {
+                        return fullGrid.get(idxFullGrid - 1);
+                    }
+                    break;
                 case "rt":
-                    return fullGrid.get(idxFullGrid + 1);
-
+                    if(idxFullGrid + 10 <= fullGrid.size()-1) {
+                        return fullGrid.get(idxFullGrid + 1);
+                    }
+                default:
+                    System.out.println("OHH NOO, SOMETHING WENT HORRIBLE WRONG!!!");
             }
         } catch (Exception e) {
             e.printStackTrace();
+            System.out.println(e.getMessage());
         }
         return null;
     }
@@ -1188,7 +1198,9 @@ public class SalvoController {
 
                     List<String> randomQuad = quadrantsLessToMost.get(picker.nextInt(quadrantsLessToMost.size()));
 
-                    rtn.add(randomQuad.get(picker.nextInt(randomQuad.size())));
+                    if(randomQuad.size() != 0) {
+                        rtn.add(randomQuad.get(picker.nextInt(randomQuad.size())));
+                    }
 
                 }
 

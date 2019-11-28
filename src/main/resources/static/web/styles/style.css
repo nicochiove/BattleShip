@@ -1,3 +1,7 @@
+html{
+    cursor: url("../assets/icons/cursor_flecha2.png"), auto;
+}
+
 body{
     background-image: url(../assets/background-min2.jpg);
     background-size: cover;
